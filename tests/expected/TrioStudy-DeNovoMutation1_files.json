@@ -1,0 +1,10 @@
+{
+  "input_files": [
+    "DocumentReference/genomicFile1",
+    "DocumentReference/genomicFile2",
+    "DocumentReference/genomicFile3"
+  ],
+  "output_files": [],
+  "regions_studied": [],
+  "regions_called": []
+}

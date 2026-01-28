@@ -1,0 +1,12 @@
+{
+  "input_files": [
+    "DocumentReference/genomicFileProband",
+    "DocumentReference/genomicFileMother",
+    "DocumentReference/genomicFileFather"
+  ],
+  "output_files": [
+    "DocumentReference/genomicFileGroupAsSubject"
+  ],
+  "regions_studied": [],
+  "regions_called": []
+}

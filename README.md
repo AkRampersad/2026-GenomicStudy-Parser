@@ -1,0 +1,1 @@
+This Project is a FHIR GenomicStudy Parser. The objective is to automatically parse a GenomicStudy Resource, obtain any relevant artifact locations (VCF,FASTA,BAM etc.). These artifacts would then be obtained from their location (assuming a server).

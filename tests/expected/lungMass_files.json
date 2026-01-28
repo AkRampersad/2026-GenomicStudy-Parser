@@ -1,0 +1,14 @@
+{
+  "input_files": [],
+  "output_files": [
+    "DocumentReference/genomicVCFfile_simple",
+    "DocumentReference/genomicVCFfile_cnv"
+  ],
+  "regions_studied": [
+    "DocumentReference/WES_FullSequencedRegion_GRCh38"
+  ],
+  "regions_called": [
+    "DocumentReference/SimpleVariantAnalysis_called",
+    "DocumentReference/CNVAnalysis_called"
+  ]
+}
