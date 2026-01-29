@@ -1,67 +1,74 @@
 import json
 
 
-class Genomic_Study_Parser:
-    def __init__(self, *args, **kwargs):
-        self.files = {}
+class GenomicStudyParser:
+    """Parses FHIR R5 GenomicStudy resources into structured analysis data."""
 
-    def parse_genomic_study(self, input_path, api_link=None):
-        """
-        Parse a FHIR R5 GenomicStudy resource and extract file/artifact references.
+    def __init__(self):
+        self.analyses = []
 
-        Args:
-            input_path: Path to the JSON file containing the GenomicStudy resource
-            api_link: Optional base API URL for constructing full file URLs
+    def parse(self, input_path):
+        """Parse a GenomicStudy JSON file and return extracted analyses."""
+        with open(input_path, 'r') as f:
+            data = json.load(f)
 
-        Returns:
-            Dictionary containing file references from all analyses
-        """
-        self.api_link = api_link
+        patient_id = data.get('subject', {}).get('reference')
+        analyses = []
 
-        with open(input_path, 'r') as json_file:
-            data = json.load(json_file)
+        for analysis_data in data.get('analysis', []):
+            analysis = {
+                "patientID": patient_id,
+                "analysisID": None,
+                "analysisDate": analysis_data.get('date'),
+                "specimenID": [],
+                "genomicBuild": None,
+                "studiedRegion": [],
+                "dnaChangeType": [],
+                "vcfFiles": []
+            }
 
-        input_files = []
-        output_files = []
-        regions_studied = []
-        regions_called = []
+            # Extract analysis identifier
+            for identifier in analysis_data.get('identifier', []):
+                if identifier.get('value'):
+                    analysis["analysisID"] = identifier.get('value')
+                    break
 
-        for analysis in data.get('analysis', []):
-            # Input files (VCF, etc.)
-            for input_item in analysis.get('input', []):
-                file_ref = input_item.get('file', {}).get('reference')
-                if file_ref:
-                    input_files.append(self._build_file_url(file_ref))
+            # Extract specimen references
+            for specimen in analysis_data.get('specimen', []):
+                ref = specimen.get('reference')
+                if ref:
+                    analysis["specimenID"].append(ref)
 
-            # Output files (VCF, etc.)
-            for output in analysis.get('output', []):
+            # Extract genome build
+            genome_build = analysis_data.get('genomeBuild', {})
+            if genome_build:
+                coding = genome_build.get('coding', [{}])[0]
+                analysis["genomicBuild"] = coding.get('display') or coding.get('code')
+
+            # Extract studied regions
+            for region in analysis_data.get('regionsStudied', []):
+                ref = region.get('reference')
+                if ref:
+                    analysis["studiedRegion"].append(ref)
+
+            # Extract DNA change types
+            for change_type in analysis_data.get('changeType', []):
+                coding_list = change_type.get('coding', [])
+                if coding_list:
+                    analysis["dnaChangeType"].append(coding_list[0].get('display'))
+
+            # Extract file references from outputs and inputs
+            for output in analysis_data.get('output', []):
                 file_ref = output.get('file', {}).get('reference')
                 if file_ref:
-                    output_files.append(self._build_file_url(file_ref))
+                    analysis["vcfFiles"].append(file_ref)
 
-            # Regions studied (BED files)
-            for region in analysis.get('regionsStudied', []):
-                ref = region.get('reference')
-                if ref:
-                    regions_studied.append(self._build_file_url(ref))
+            for input_item in analysis_data.get('input', []):
+                file_ref = input_item.get('file', {}).get('reference')
+                if file_ref:
+                    analysis["vcfFiles"].append(file_ref)
 
-            # Regions called (BED files)
-            for region in analysis.get('regionsCalled', []):
-                ref = region.get('reference')
-                if ref:
-                    regions_called.append(self._build_file_url(ref))
+            analyses.append(analysis)
 
-        self.files = {
-            'input_files': list(dict.fromkeys(input_files)),
-            'output_files': list(dict.fromkeys(output_files)),
-            'regions_studied': list(dict.fromkeys(regions_studied)),
-            'regions_called': list(dict.fromkeys(regions_called))
-        }
-
-        return self.files
-
-    def _build_file_url(self, reference):
-        """Build full API URL from a FHIR reference."""
-        if self.api_link:
-            return f"{self.api_link.rstrip('/')}/{reference}"
-        return reference
+        self.analyses = {"analyses": analyses}
+        return self.analyses

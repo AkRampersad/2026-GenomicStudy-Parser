@@ -1,10 +1,44 @@
 {
-  "input_files": [
-    "DocumentReference/genomicFile1",
-    "DocumentReference/genomicFile2",
-    "DocumentReference/genomicFile3"
-  ],
-  "output_files": [],
-  "regions_studied": [],
-  "regions_called": []
+  "analyses": [
+    {
+      "patientID": "Patient/denovoChild",
+      "analysisID": "urn:uuid:1111-1111-1111-1111",
+      "analysisDate": "2021-01-01T01:01:10-06:00",
+      "specimenID": ["Specimen/denovo-1"],
+      "genomicBuild": null,
+      "studiedRegion": [],
+      "dnaChangeType": [],
+      "vcfFiles": ["DocumentReference/genomicFile1"]
+    },
+    {
+      "patientID": "Patient/denovoChild",
+      "analysisID": "urn:uuid:1111-1111-1111-1112",
+      "analysisDate": "2021-01-01T01:01:10-06:00",
+      "specimenID": ["Specimen/denovo-2"],
+      "genomicBuild": null,
+      "studiedRegion": [],
+      "dnaChangeType": [],
+      "vcfFiles": ["DocumentReference/genomicFile2"]
+    },
+    {
+      "patientID": "Patient/denovoChild",
+      "analysisID": "urn:uuid:1111-1111-1111-1113",
+      "analysisDate": "2021-01-01T01:01:10-06:00",
+      "specimenID": ["Specimen/denovo-3"],
+      "genomicBuild": null,
+      "studiedRegion": [],
+      "dnaChangeType": [],
+      "vcfFiles": ["DocumentReference/genomicFile3"]
+    },
+    {
+      "patientID": "Patient/denovoChild",
+      "analysisID": "urn:uuid:1111-1111-1111-1114",
+      "analysisDate": "2021-01-01T03:01:10-06:00",
+      "specimenID": [],
+      "genomicBuild": null,
+      "studiedRegion": [],
+      "dnaChangeType": [],
+      "vcfFiles": ["DocumentReference/genomicFile1", "DocumentReference/genomicFile2", "DocumentReference/genomicFile3"]
+    }
+  ]
 }

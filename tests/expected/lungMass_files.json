@@ -1,14 +1,24 @@
 {
-  "input_files": [],
-  "output_files": [
-    "DocumentReference/genomicVCFfile_simple",
-    "DocumentReference/genomicVCFfile_cnv"
-  ],
-  "regions_studied": [
-    "DocumentReference/WES_FullSequencedRegion_GRCh38"
-  ],
-  "regions_called": [
-    "DocumentReference/SimpleVariantAnalysis_called",
-    "DocumentReference/CNVAnalysis_called"
+  "analyses": [
+    {
+      "patientID": "Patient/genomicPatient",
+      "analysisID": "urn:uuid:1111-1111-1111-1112",
+      "analysisDate": "2019-03-01T01:01:10-06:00",
+      "specimenID": ["Specimen/genomicSpecimen"],
+      "genomicBuild": "GRCh38",
+      "studiedRegion": ["DocumentReference/WES_FullSequencedRegion_GRCh38"],
+      "dnaChangeType": ["SNV", "MNV", "delins"],
+      "vcfFiles": ["DocumentReference/genomicVCFfile_simple"]
+    },
+    {
+      "patientID": "Patient/genomicPatient",
+      "analysisID": "urn:uuid:1111-1111-1111-1115",
+      "analysisDate": "2019-03-01T01:01:10-06:00",
+      "specimenID": ["Specimen/genomicSpecimen"],
+      "genomicBuild": "GRCh38",
+      "studiedRegion": ["DocumentReference/WES_FullSequencedRegion_GRCh38"],
+      "dnaChangeType": ["CNV"],
+      "vcfFiles": ["DocumentReference/genomicVCFfile_cnv"]
+    }
   ]
 }

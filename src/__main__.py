@@ -1,53 +1,50 @@
-"""
-CLI entry point for the GenomicStudy Parser.
-
-Usage:
-    python -m src path/to/study.json
-    python -m src study.json --api-link https://fhir.example.org/r5 --pretty
-"""
 import argparse
 import json
 import sys
 
-from parser import Genomic_Study_Parser
+from .parser import GenomicStudyParser
+from .pipeline import GenomicStudyPipeline
 
 
 def main():
-    arg_parser = argparse.ArgumentParser(
-        description='Parse FHIR R5 GenomicStudy resources and extract file references.'
+    parser = argparse.ArgumentParser(
+        description='Parse FHIR R5 GenomicStudy resources'
     )
-    arg_parser.add_argument(
-        'input_file',
-        help='Path to the GenomicStudy JSON file'
-    )
-    arg_parser.add_argument(
-        '--api-link',
-        help='Base API URL to prepend to file references'
-    )
-    arg_parser.add_argument(
-        '--output', '-o',
-        help='Output file path (default: stdout)'
-    )
-    arg_parser.add_argument(
-        '--pretty',
-        action='store_true',
-        help='Pretty print JSON output'
-    )
+    parser.add_argument('input_file', help='Path to GenomicStudy JSON file')
+    parser.add_argument('--fhir-url', required=True, help='FHIR server base URL')
+    parser.add_argument('--token', help='Bearer token for authentication')
+    parser.add_argument('--output-dir', default='./downloads', help='Download directory')
+    parser.add_argument('--output', '-o', help='Output JSON file path')
+    parser.add_argument('--pretty', action='store_true', help='Pretty print output')
+    parser.add_argument('--dry-run', action='store_true', help='Parse only, no downloads')
 
-    args = arg_parser.parse_args()
+    args = parser.parse_args()
 
-    parser = Genomic_Study_Parser()
     try:
-        files = parser.parse_genomic_study(args.input_file, api_link=args.api_link)
+        if args.dry_run:
+            gs_parser = GenomicStudyParser()
+            result = gs_parser.parse(args.input_file)
+        else:
+            pipeline = GenomicStudyPipeline(
+                args.fhir_url,
+                auth_token=args.token,
+                output_dir=args.output_dir
+            )
+            processed = pipeline.process(args.input_file)
+            result = pipeline.to_mongo_documents(processed)
+
     except FileNotFoundError:
         print(f"Error: File not found: {args.input_file}", file=sys.stderr)
         sys.exit(1)
     except json.JSONDecodeError as e:
         print(f"Error: Invalid JSON: {e}", file=sys.stderr)
         sys.exit(1)
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
 
     indent = 2 if args.pretty else None
-    output = json.dumps(files, indent=indent)
+    output = json.dumps(result, indent=indent)
 
     if args.output:
         with open(args.output, 'w') as f:
